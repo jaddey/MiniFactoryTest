@@ -3,6 +3,7 @@
 [Tt]emp/
 [Oo]bj/
 [Bb]UILD/
+*.meta
 
 # IDE
 *.csproj
