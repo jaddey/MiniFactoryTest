@@ -1,69 +1,25 @@
-# Unity generated files
+# Unity
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
 [Bb]UILD/
+
+# IDE
 *.csproj
-*.unityproj
 *.sln
 *.suo
 *.user
-*.userprefs
-*.pidb
-*.booproj
-*.asset
-*.meta
-*.prefab
-*.mat
-*.anim
-*.controller
-*.unity
-*.unitypackage
-*.manifest
-*.ds_store
-*.DS_Store
-
-# Visual Studio cache and user specific files
-*.userosscache
-*.vspscc
-*.vssscc
-*.tmp
-*.tmpproj
-
-# MonoDevelop user specific files
-*.userprefs
-
-# JetBrains Rider
 .idea/
 *.dotSettings
-*.dotSettings.user
 
-# Android build files
+# Android
+build/
 *.apk
 *.aab
-build/
-gradle/
-*.keystore
 *.jks
 
-# iOS build files
-*.pbxuser
-*.mode1v3
-*.mode2v3
-*.perspectivev3
-*.xcworkspace
-*.xcodeproj
-*.plist
+# macOS
+.DS_Store
 
 # Logs
 *.log
-*_Upm.log
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
