@@ -18,6 +18,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _offlineRewardText;
     [SerializeField] private Button _claimButton;
 
+    [Header("IAP")]
+    [SerializeField] private IAPManager _iapManager;
+    [SerializeField] private Button _buyCoinsButton;
+
     private void Awake()
     {
         // Скрываем панель именно здесь, а не в Start():
@@ -25,6 +29,10 @@ public class UIManager : MonoBehaviour
         // награду через событие OnOfflineIncomeReady — и скрыл бы её обратно.
         _offlineRewardPanel.SetActive(false);
         _claimButton.onClick.AddListener(ClaimOfflineReward);
+        _buyCoinsButton.onClick.AddListener(_iapManager.BuyCoinsPack);
+        _iapManager.PurchaseSucceeded += OnCoinsPurchased;
+        _iapManager.PurchaseFailed += (id, reason) =>
+            Debug.LogWarning($"[Shop] Покупка не удалась: {reason}");
     }
 
     private void Start()
@@ -80,6 +88,10 @@ public class UIManager : MonoBehaviour
         // (кеширована в OfflineProgress на момент расчёта).
         _offlineProgress.ClaimOfflineIncome(_factory);
         _offlineRewardPanel.SetActive(false);
+    }
+    private void OnCoinsPurchased(string productId, int coins)
+    {
+        _factory.AddCoins(coins);
     }
 
     private void UpdateUI()
