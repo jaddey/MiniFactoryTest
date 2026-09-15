@@ -1,0 +1,38 @@
+{
+  "machines": [
+    {
+      "id": 1,
+      "name": "Машина 1",
+      "unlockCost": 0,
+      "baseUpgradeCost": 50,
+      "baseCoinsPerCycle": 1,
+      "baseCycleDuration": 3.0,
+      "maxLevel": 10
+    },
+    {
+      "id": 2,
+      "name": "Машина 2",
+      "unlockCost": 500,
+      "baseUpgradeCost": 200,
+      "baseCoinsPerCycle": 25,
+      "baseCycleDuration": 10.0,
+      "maxLevel": 10
+    },
+    {
+      "id": 3,
+      "name": "Машина 3",
+      "unlockCost": 1000,
+      "baseUpgradeCost": 400,
+      "baseCoinsPerCycle": 100,
+      "baseCycleDuration": 15.0,
+      "maxLevel": 10
+    }
+  ],
+  "boost": {
+    "defaultDuration": 30.0,
+    "defaultMultiplier": 5
+  },
+  "offlineProduction": {
+    "maxOfflineTime": 7200.0
+  }
+}

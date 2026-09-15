@@ -6,7 +6,7 @@ public class MachineUI : MonoBehaviour
 {
     [SerializeField] private Machine _machine;
     [SerializeField] private Factory _factory;
-    [SerializeField] private int _maxLevel = 10; // Максимальный уровень машины
+    [SerializeField] private int _maxLevel = 10;
 
     [Header("UI Elements")]
     [SerializeField] private Button _actionButton;
@@ -23,31 +23,7 @@ public class MachineUI : MonoBehaviour
         UpdateUI();
     }
 
-    private void OnEnable()
-    {
-        if (_machine != null)
-        {
-            _machine.OnStateChanged += OnMachineStateChanged;
-            _machine.OnLevelChanged += OnMachineLevelChanged;
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (_machine != null)
-        {
-            _machine.OnStateChanged -= OnMachineStateChanged;
-            _machine.OnLevelChanged -= OnMachineLevelChanged;
-        }
-    }
-
-    // Обработчики событий машины
-    private void OnMachineStateChanged(Machine machine)
-    {
-        UpdateUI();
-    }
-
-    private void OnMachineLevelChanged(Machine machine)
+    private void Update()
     {
         UpdateUI();
     }
@@ -69,10 +45,9 @@ public class MachineUI : MonoBehaviour
         }
         else if (_machine.State == MachineState.Unlocked)
         {
-            // Проверяем, что уровень не максимальный
-            if (_machine.Level >= _maxLevel)
+            if (_machine.Level >= _machine.MaxLevel)
             {
-                Debug.LogWarning($"Максимальный уровень ({_maxLevel}) уже достигнут!");
+                Debug.LogWarning($"Максимальный уровень ({_machine.MaxLevel}) уже достигнут!");
                 return;
             }
 
@@ -94,24 +69,23 @@ public class MachineUI : MonoBehaviour
         if (_machine.State == MachineState.Locked)
         {
             _actionButtonText.text = $"Разблокировать - {_machine.UnlockCost} монет";
-            _levelText.text = "Уровень: Заблокировано";
+            _levelText.text = $"{_machine.Name} | Заблокировано";
             if (_statusText != null)
                 _statusText.text = "";
         }
         else
         {
-            // Проверяем, что уровень не максимальный
-            if (_machine.Level >= _maxLevel)
+            if (_machine.Level >= _machine.MaxLevel)
             {
                 _actionButtonText.text = "Макс. уровень";
-                _actionButton.interactable = false; // Отключаем кнопку
+                _actionButton.interactable = false;
             }
             else
             {
                 _actionButtonText.text = $"Улучшить - {_machine.UpgradeCost} монет";
                 _actionButton.interactable = true;
             }
-            _levelText.text = $"Уровень: {_machine.Level}/{_maxLevel}";
+            _levelText.text = $"{_machine.Name} | Уровень: {_machine.Level}/{_machine.MaxLevel}";
             if (_statusText != null)
                 _statusText.text = $"Производит: {_machine.CoinsPerCycle} монет за {_machine.CycleDuration:F1} сек";
         }

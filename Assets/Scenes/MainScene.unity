@@ -1071,7 +1071,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dbaad85ca0566b44ba8c166cfca8bcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OfflineProgress
-  _maxOfflineTime: 7200
   _saveSystem: {fileID: 475377638}
 --- !u!114 &475377640
 MonoBehaviour:
@@ -1085,9 +1084,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a6cba8c50f64ea44bf92ab932b0380b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoostManager
-  _defaultDuration: 30
-  _defaultMultiplier: 2
-  _machines: []
+  _machines:
+  - {fileID: 1788011612}
+  - {fileID: 8666244900451638221}
+  - {fileID: 6454050227775722855}
 --- !u!4 &475377641
 Transform:
   m_ObjectHideFlags: 0
@@ -2257,6 +2257,50 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 911305666}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1004537650
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1004537652}
+  - component: {fileID: 1004537651}
+  m_Layer: 0
+  m_Name: GameConfigManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1004537651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004537650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffd53ce09090fe244937339eaf5aa941, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameConfigManager
+--- !u!4 &1004537652
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004537650}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 379.04147, y: -0.00001, z: 38.90277}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1254491057
 GameObject:
   m_ObjectHideFlags: 0
@@ -2446,11 +2490,6 @@ Transform:
   - {fileID: 826979389}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!111 &1359127568 stripped
-Animation:
-  m_CorrespondingSourceObject: {fileID: 4215647943053091071, guid: 1da340e60c6e7c64099923cb038b922c, type: 3}
-  m_PrefabInstance: {fileID: 4578639844965365734}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1657508606
 GameObject:
   m_ObjectHideFlags: 0
@@ -3018,12 +3057,8 @@ PrefabInstance:
       value: Machine_2_mesh
       objectReference: {fileID: 0}
     - target: {fileID: 3382993459441619969, guid: f214ffe6ec7890f44a6a210a503bf3b6, type: 3}
-      propertyPath: _animation
-      value: 
-      objectReference: {fileID: 3024196426019871408}
-    - target: {fileID: 3382993459441619969, guid: f214ffe6ec7890f44a6a210a503bf3b6, type: 3}
-      propertyPath: _animationClipName
-      value: Machine_2
+      propertyPath: _baseCoinsPerCycle
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 5294650091386131913, guid: f214ffe6ec7890f44a6a210a503bf3b6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3074,16 +3109,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f214ffe6ec7890f44a6a210a503bf3b6, type: 3}
---- !u!111 &3024196426019871408 stripped
-Animation:
-  m_CorrespondingSourceObject: {fileID: 7005076859082323597, guid: f214ffe6ec7890f44a6a210a503bf3b6, type: 3}
-  m_PrefabInstance: {fileID: 2372812550368967521}
-  m_PrefabAsset: {fileID: 0}
---- !u!111 &3702175730529691933 stripped
-Animation:
-  m_CorrespondingSourceObject: {fileID: 3183198939781223274, guid: b7c2f939b08637e4e94094384e0f4af8, type: 3}
-  m_PrefabInstance: {fileID: 8517056627609708136}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4578639844965365734
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3092,14 +3117,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1069971087195151685, guid: 1da340e60c6e7c64099923cb038b922c, type: 3}
-      propertyPath: _animation
-      value: 
-      objectReference: {fileID: 1359127568}
-    - target: {fileID: 1069971087195151685, guid: 1da340e60c6e7c64099923cb038b922c, type: 3}
-      propertyPath: _animationClipName
-      value: Machine_1
-      objectReference: {fileID: 0}
     - target: {fileID: 7265531159729222496, guid: 1da340e60c6e7c64099923cb038b922c, type: 3}
       propertyPath: _factory
       value: 
@@ -3221,12 +3238,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1260908146}
     - target: {fileID: 8987103351710590075, guid: b7c2f939b08637e4e94094384e0f4af8, type: 3}
-      propertyPath: _animation
-      value: 
-      objectReference: {fileID: 3702175730529691933}
-    - target: {fileID: 8987103351710590075, guid: b7c2f939b08637e4e94094384e0f4af8, type: 3}
-      propertyPath: _animationClipName
-      value: Machine_3
+      propertyPath: _baseCoinsPerCycle
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3259,3 +3272,4 @@ SceneRoots:
   - {fileID: 475377641}
   - {fileID: 1657508610}
   - {fileID: 1923926321}
+  - {fileID: 1004537652}

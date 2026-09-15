@@ -18,7 +18,7 @@ public class ResetGame : MonoBehaviour
 
     public void ResetAll()
     {
-        // Сбрасываем монеты
+        // Сбрасываем валюту
         _factory.AddCoins(-_factory.Currency);
 
         // Сбрасываем все машины
@@ -26,17 +26,15 @@ public class ResetGame : MonoBehaviour
         {
             machine.SaveTimeSinceLastProduction(0f);
             machine.SetProducing(true);
-            machine.Lock(); // Блокируем машину
-            // Сбрасываем уровень до 1 (если нужно)
-            // (В текущей реализации уровень сбрасывается при блокировке, но если нет — нужно добавить сброс уровня)
+            machine.Lock();
         }
 
         // Сбрасываем Boost
         _boostManager.StopBoost();
 
-        // Сохраняем сброшенное состояние
+        // Сохраняем состояние
         _saveSystem.SaveGame(_factory);
 
-        Debug.Log("Игра сброшена на стартовые значения!");
+        Debug.Log("Игра сброшена на начальные настройки!");
     }
 }

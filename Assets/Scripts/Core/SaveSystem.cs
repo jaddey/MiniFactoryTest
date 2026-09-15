@@ -17,13 +17,30 @@ public class GameSaveData
 {
     public int Currency;
     public List<MachineSaveData> MachineStates = new List<MachineSaveData>();
-    public long LastExitTimeTicks; // Время выхода в тиках
-    public BoostSaveData BoostState = new BoostSaveData();
+    public long LastExitTimeTicks;
+    public BoostSaveData BoostState = new BoostSaveData { IsActive = false, Multiplier = 1 };
 }
 
 public class SaveSystem : MonoBehaviour
 {
     private string _savePath => Path.Combine(Application.persistentDataPath, "game_save.json");
+
+    public GameSaveData LoadGame()
+    {
+        if (!File.Exists(_savePath))
+        {
+            return new GameSaveData
+            {
+                Currency = 0,
+                LastExitTimeTicks = 0,
+                MachineStates = new List<MachineSaveData>(),
+                BoostState = new BoostSaveData { IsActive = false, Multiplier = 1 }
+            };
+        }
+
+        string json = File.ReadAllText(_savePath);
+        return JsonUtility.FromJson<GameSaveData>(json) ?? new GameSaveData();
+    }
 
     public void SaveGame(Factory factory)
     {
@@ -48,22 +65,5 @@ public class SaveSystem : MonoBehaviour
 
         string json = JsonUtility.ToJson(saveData, true);
         File.WriteAllText(_savePath, json);
-    }
-
-    public GameSaveData LoadGame()
-    {
-        if (!File.Exists(_savePath))
-        {
-            return new GameSaveData
-            {
-                Currency = 0,
-                LastExitTimeTicks = 0,
-                MachineStates = new List<MachineSaveData>(),
-                BoostState = new BoostSaveData { IsActive = false }
-            };
-        }
-
-        string json = File.ReadAllText(_savePath);
-        return JsonUtility.FromJson<GameSaveData>(json) ?? new GameSaveData();
     }
 }

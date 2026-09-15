@@ -9,19 +9,14 @@ public enum MachineState
 
 public class Machine : MonoBehaviour
 {
-    [SerializeField] private int _id;
-    [SerializeField] private int _baseCoinsPerCycle = 1; // Базовая производительность (например, 1 или 25)
-    [SerializeField] private float _cycleDuration = 3f;
-    [SerializeField] private int _unlockCost = 100;
-    [SerializeField] private int _baseUpgradeCost = 50;
+    [SerializeField] private int _id; // ID машины (для поиска в конфиге)
 
-    [SerializeField] private MachineState _state = MachineState.Locked;
-    [SerializeField] private Animation _animation;
-    [SerializeField] private string _animationClipName = "MachineAnimation";
-
+    private MachineState _state = MachineState.Locked;
     private int _level = 1;
     private float _timeSinceLastProduction = 0f;
     private bool _isProducing = true;
+    [SerializeField] private Animation _animation;
+    [SerializeField] private string _animationClipName = "MachineAnimation";
     private float _defaultAnimationSpeed = 1f;
 
     public event Action<Machine> OnStateChanged;
@@ -31,12 +26,24 @@ public class Machine : MonoBehaviour
     public int Id => _id;
     public MachineState State => _state;
     public int Level => _level;
-    public int UnlockCost => _unlockCost;
-    public int UpgradeCost => _baseUpgradeCost * _level;
+    public int UnlockCost => GetConfig()?.unlockCost ?? 0;
+    public int UpgradeCost => GetConfig()?.baseUpgradeCost * _level ?? 0;
     public float TimeSinceLastProduction => _timeSinceLastProduction;
-    public int CoinsPerCycle => _baseCoinsPerCycle * _level; // Умножаем базовую производительность на уровень
-    public float CycleDuration => _cycleDuration / (1 + (_level - 1) * 0.1f); // Ускорение цикла при улучшении
+    public int CoinsPerCycle => GetConfig()?.baseCoinsPerCycle * _level ?? 0;
+    public float CycleDuration => GetConfig()?.baseCycleDuration / (1 + (_level - 1) * 0.1f) ?? 3f;
     public bool IsProducing => _isProducing;
+    public int MaxLevel => GetConfig()?.maxLevel ?? 10;
+    public string Name => GetConfig()?.name ?? $"Машина {_id}";
+
+    private MachineConfig GetConfig()
+    {
+        if (GameConfigManager.Config?.machines == null) return null;
+        foreach (var config in GameConfigManager.Config.machines)
+        {
+            if (config.id == _id) return config;
+        }
+        return null;
+    }
 
     private void Start()
     {
@@ -64,7 +71,7 @@ public class Machine : MonoBehaviour
 
     public bool Upgrade()
     {
-        if (_state != MachineState.Unlocked) return false;
+        if (_state != MachineState.Unlocked || _level >= MaxLevel) return false;
         _level++;
         OnLevelChanged?.Invoke(this);
         UpdateAnimationState();
@@ -86,7 +93,6 @@ public class Machine : MonoBehaviour
     private void UpdateAnimationState()
     {
         if (_animation == null || string.IsNullOrEmpty(_animationClipName)) return;
-
         bool shouldPlay = _state == MachineState.Unlocked && _isProducing;
         if (shouldPlay)
         {
@@ -102,7 +108,6 @@ public class Machine : MonoBehaviour
     private void Update()
     {
         if (_state != MachineState.Unlocked || !_isProducing) return;
-
         _timeSinceLastProduction += Time.deltaTime;
         if (_timeSinceLastProduction >= CycleDuration)
         {

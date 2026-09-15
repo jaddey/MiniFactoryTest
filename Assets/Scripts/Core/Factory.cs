@@ -13,6 +13,16 @@ public class Factory : MonoBehaviour
     [SerializeField] private OfflineProgress _offlineProgress;
     [SerializeField] private SaveSystem _saveSystem;
 
+    // ѕубличные свойства дл€ доступа к приватным пол€м (только в редакторе и тестах)
+#if UNITY_EDITOR || UNITY_TEST
+    public Machine[] MachinesForTesting => _machines;
+    public BoostManager BoostManagerForTesting => _boostManager;
+#endif
+
+    // ќбычные публичные свойства дл€ основного кода
+    public IEnumerable<Machine> Machines => _machines;
+    public IBoostManager BoostManager => _boostManager;
+
     private int _currency = 0;
     private bool _isProducing = true;
 
@@ -25,9 +35,6 @@ public class Factory : MonoBehaviour
             OnCurrencyChanged?.Invoke(_currency);
         }
     }
-
-    public IEnumerable<Machine> Machines => _machines;
-    public BoostManager BoostManager => _boostManager;
 
     public bool IsProducing
     {
@@ -49,7 +56,6 @@ public class Factory : MonoBehaviour
         LoadMachines(saveData);
         SubscribeToMachines();
 
-        // ѕровер€ем offline награду при старте
         _offlineProgress.CheckOfflineIncome(this);
     }
 
@@ -58,12 +64,10 @@ public class Factory : MonoBehaviour
         IsProducing = !pauseStatus;
         if (pauseStatus)
         {
-            // —охран€ем врем€ выхода при паузе (сворачивании)
             _saveSystem.SaveGame(this);
         }
         else
         {
-            // ѕри возвращении из паузы провер€ем offline награду
             _offlineProgress.CheckOfflineIncome(this);
         }
     }
@@ -143,4 +147,13 @@ public class Factory : MonoBehaviour
             .Where(m => m.State == MachineState.Unlocked)
             .Sum(m => (float)m.CoinsPerCycle / m.CycleDuration);
     }
+
+    // ƒобавл€ем в конец класса Factory
+#if UNITY_EDITOR
+    public void SetupForTesting(Machine[] machines, BoostManager boostManager)
+    {
+        _machines = machines;
+        _boostManager = boostManager;
+    }
+#endif
 }

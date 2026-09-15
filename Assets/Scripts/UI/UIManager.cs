@@ -18,11 +18,17 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _offlineRewardText;
     [SerializeField] private Button _claimButton;
 
+    private void Awake()
+    {
+        // Скрываем панель именно здесь, а не в Start():
+        // Start может выполниться ПОСЛЕ того, как Factory.Start() уже показал
+        // награду через событие OnOfflineIncomeReady — и скрыл бы её обратно.
+        _offlineRewardPanel.SetActive(false);
+        _claimButton.onClick.AddListener(ClaimOfflineReward);
+    }
+
     private void Start()
     {
-        _offlineRewardPanel.SetActive(false);
-        _offlineProgress.OnOfflineIncomeReady += ShowOfflineReward;
-        _claimButton.onClick.AddListener(ClaimOfflineReward);
         UpdateUI();
     }
 
@@ -34,6 +40,9 @@ public class UIManager : MonoBehaviour
 
     private void OnEnable()
     {
+        // Подписка именно в OnEnable: он выполняется до ВСЕХ Start(),
+        // поэтому событие из Factory.Start() гарантированно будет поймано.
+        _offlineProgress.OnOfflineIncomeReady += ShowOfflineReward;
         _factory.OnCurrencyChanged += UpdateCoins;
         _boostManager.OnBoostStarted += UpdateBoostStatus;
         _boostManager.OnBoostFinished += UpdateBoostStatus;
@@ -42,25 +51,33 @@ public class UIManager : MonoBehaviour
 
     private void OnDisable()
     {
+        _offlineProgress.OnOfflineIncomeReady -= ShowOfflineReward;
         _factory.OnCurrencyChanged -= UpdateCoins;
         _boostManager.OnBoostStarted -= UpdateBoostStatus;
         _boostManager.OnBoostFinished -= UpdateBoostStatus;
         _factory.OnMachinesUpdated -= UpdateIncomePerMinute;
     }
 
-    private void ShowOfflineReward(int coins, float time)
+    private void ShowOfflineReward(OfflineRewardData reward)
     {
-        if (coins > 0 && time > 0)
-        {
-            int minutes = Mathf.FloorToInt(time / 60f);
-            int seconds = Mathf.FloorToInt(time % 60f);
-            _offlineRewardText.text = $"Вас не было в игре {minutes} мин {seconds} сек\nВаша награда: {coins:N0} монет";
-            _offlineRewardPanel.SetActive(true);
-        }
+        if (reward == null || reward.TotalCoins <= 0) return;
+
+        int minutes = Mathf.FloorToInt(reward.OfflineTime / 60f);
+        int seconds = Mathf.FloorToInt(reward.OfflineTime % 60f);
+
+        string boostInfo = reward.BoostTime > 0f
+            ? $"\nИз них буст x{reward.BoostMultiplier}: {Mathf.FloorToInt(reward.BoostTime)} сек"
+            : "";
+
+        _offlineRewardText.text =
+            $"Вас не было: {minutes} мин {seconds} сек{boostInfo}\nЗаработано: {reward.TotalCoins:N0} монет";
+        _offlineRewardPanel.SetActive(true);
     }
 
     private void ClaimOfflineReward()
     {
+        // Начисляется ровно та сумма, что была показана на панели
+        // (кеширована в OfflineProgress на момент расчёта).
         _offlineProgress.ClaimOfflineIncome(_factory);
         _offlineRewardPanel.SetActive(false);
     }

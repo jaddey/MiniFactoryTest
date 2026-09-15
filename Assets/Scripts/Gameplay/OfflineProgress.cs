@@ -1,132 +1,124 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 public class OfflineProgress : MonoBehaviour
 {
-    [SerializeField] private float _maxOfflineTime = 7200f; // 2 часа
     [SerializeField] private SaveSystem _saveSystem;
 
-    public event Action<int, float> OnOfflineIncomeReady; // (монеты, время простоя)
+    public event Action<OfflineRewardData> OnOfflineIncomeReady;
 
+    private OfflineRewardData _pendingReward;
+
+    private float MaxOfflineTime => GameConfigManager.Config?.offlineProduction?.maxOfflineTime ?? 7200f;
+
+    // Вызывается при запуске игры и при возврате из паузы.
+    // Считает награду ОДИН раз и кеширует — UI показывает ровно то,
+    // что будет выдано по кнопке.
     public void CheckOfflineIncome(Factory factory)
     {
-        var saveData = _saveSystem.LoadGame();
-        DateTime lastExitTime = new DateTime(saveData.LastExitTimeTicks);
-        DateTime currentTime = DateTime.Now;
+        _pendingReward = CalculateReward(factory);
 
-        double offlineTimeTotalSeconds = (currentTime - lastExitTime).TotalSeconds;
-        float offlineTime = Mathf.Min((float)offlineTimeTotalSeconds, _maxOfflineTime);
-        if (offlineTime <= 0f)
-        {
-            OnOfflineIncomeReady?.Invoke(0, 0f);
-            return;
-        }
-
-        // Получаем список активных машин
-        var activeMachines = factory.Machines
-            .Where(m => m.State == MachineState.Unlocked)
-            .ToList();
-
-        if (activeMachines.Count == 0)
-        {
-            OnOfflineIncomeReady?.Invoke(0, 0f);
-            return;
-        }
-
-        // Рассчитываем время действия Boost во время offline
-        float boostOfflineTime = 0f;
-        int boostMultiplier = 1;
-
-        if (saveData.BoostState.IsActive)
-        {
-            DateTime boostEndTime = new DateTime(saveData.BoostState.EndTime);
-            if (lastExitTime <= boostEndTime)
-            {
-                double boostTimeLeftAtExit = (boostEndTime - lastExitTime).TotalSeconds;
-                boostOfflineTime = Mathf.Min(offlineTime, (float)boostTimeLeftAtExit);
-                boostMultiplier = saveData.BoostState.Multiplier;
-            }
-        }
-
-        // Рассчитываем монеты для каждой машины отдельно
-        int totalCoins = 0;
-        foreach (var machine in activeMachines)
-        {
-            // Сколько полных циклов произвела машина за время offline
-            float cyclesInOffline = offlineTime / machine.CycleDuration;
-            int fullCycles = Mathf.FloorToInt(cyclesInOffline);
-            totalCoins += fullCycles * machine.CoinsPerCycle;
-        }
-
-        // Учитываем Boost для времени, когда он был активен
-        int boostCoins = 0;
-        foreach (var machine in activeMachines)
-        {
-            float cyclesInBoostTime = boostOfflineTime / machine.CycleDuration;
-            int fullBoostCycles = Mathf.FloorToInt(cyclesInBoostTime);
-            boostCoins += fullBoostCycles * machine.CoinsPerCycle * (boostMultiplier - 1); // только дополнительные монеты от Boost
-        }
-
-        int coinsToAdd = totalCoins + boostCoins;
-
-        OnOfflineIncomeReady?.Invoke(coinsToAdd, offlineTime);
+        if (_pendingReward.TotalCoins > 0)
+            OnOfflineIncomeReady?.Invoke(_pendingReward);
     }
 
+    // Начисляет ровно ту сумму, что была показана в UI.
     public void ClaimOfflineIncome(Factory factory)
     {
+        if (_pendingReward == null || _pendingReward.TotalCoins <= 0) return;
+
+        factory.AddCoins(_pendingReward.TotalCoins);
+
+        // Доводим прогресс циклов машин до состояния на момент возврата,
+        // чтобы те же циклы не посчитались второй раз в живом режиме.
+        for (int i = 0; i < _pendingReward.Machines.Count; i++)
+        {
+            _pendingReward.Machines[i].SaveTimeSinceLastProduction(
+                _pendingReward.CycleRemainders[i]);
+        }
+
+        _pendingReward = null;
+
+        // Фиксируем новое время выхода, чтобы награда не была выдана повторно.
+        _saveSystem.SaveGame(factory);
+    }
+
+    private OfflineRewardData CalculateReward(Factory factory)
+    {
+        var result = new OfflineRewardData();
+
         var saveData = _saveSystem.LoadGame();
         DateTime lastExitTime = new DateTime(saveData.LastExitTimeTicks);
         DateTime currentTime = DateTime.Now;
 
-        double offlineTimeTotalSeconds = (currentTime - lastExitTime).TotalSeconds;
-        float offlineTime = Mathf.Min((float)offlineTimeTotalSeconds, _maxOfflineTime);
-        if (offlineTime <= 0f) return;
+        double totalSeconds = (currentTime - lastExitTime).TotalSeconds;
+        if (totalSeconds <= 0) return result;
+
+        float offlineTime = Mathf.Min((float)totalSeconds, MaxOfflineTime);
+        result.OfflineTime = offlineTime;
 
         var activeMachines = factory.Machines
-            .Where(m => m.State == MachineState.Unlocked)
-            .ToList();
+            .Where(m => m.State == MachineState.Unlocked).ToList();
+        if (activeMachines.Count == 0) return result;
+        result.Machines = activeMachines;
 
-        if (activeMachines.Count == 0) return;
-
-        float boostOfflineTime = 0f;
+        // --- 1. Сколько из offline-времени действовал буст ---
+        float boostTime = 0f;
         int boostMultiplier = 1;
 
-        if (saveData.BoostState.IsActive)
+        if (saveData.BoostState != null && saveData.BoostState.IsActive)
         {
             DateTime boostEndTime = new DateTime(saveData.BoostState.EndTime);
-            if (lastExitTime <= boostEndTime)
+            if (lastExitTime < boostEndTime)
             {
-                double boostTimeLeftAtExit = (boostEndTime - lastExitTime).TotalSeconds;
-                boostOfflineTime = Mathf.Min(offlineTime, (float)boostTimeLeftAtExit);
+                double boostLeftAtExit = (boostEndTime - lastExitTime).TotalSeconds;
+                boostTime = Mathf.Min(offlineTime, (float)boostLeftAtExit);
                 boostMultiplier = saveData.BoostState.Multiplier;
             }
         }
 
+        result.BoostTime = boostTime;
+        result.BoostMultiplier = boostMultiplier;
+        float normalTime = offlineTime - boostTime;
+
+        // --- 2. Монеты по двум окнам ---
+        // Окно буста — с сохранённым множителем, остальное время — базово.
+        // Учитываем и незавершённый цикл на момент выхода (carry).
         int totalCoins = 0;
         foreach (var machine in activeMachines)
         {
-            float cyclesInOffline = offlineTime / machine.CycleDuration;
-            int fullCycles = Mathf.FloorToInt(cyclesInOffline);
-            totalCoins += fullCycles * machine.CoinsPerCycle;
+            float carry = machine.TimeSinceLastProduction;
+
+            int boostCycles = CountCycles(machine, carry, boostTime, out carry);
+            int normalCycles = CountCycles(machine, carry, normalTime, out carry);
+
+            totalCoins += boostCycles * machine.CoinsPerCycle * boostMultiplier
+                        + normalCycles * machine.CoinsPerCycle;
+
+            result.CycleRemainders.Add(carry);
         }
 
-        int boostCoins = 0;
-        foreach (var machine in activeMachines)
-        {
-            float cyclesInBoostTime = boostOfflineTime / machine.CycleDuration;
-            int fullBoostCycles = Mathf.FloorToInt(cyclesInBoostTime);
-            boostCoins += fullBoostCycles * machine.CoinsPerCycle * (boostMultiplier - 1);
-        }
-
-        int coinsToAdd = totalCoins + boostCoins;
-
-        if (coinsToAdd > 0)
-        {
-            factory.AddCoins(coinsToAdd);
-            Debug.Log($"Offline income claimed: +{coinsToAdd} coins for {offlineTime:F0} seconds");
-        }
-
-        _saveSystem.SaveGame(factory);
+        result.TotalCoins = totalCoins;
+        return result;
     }
+
+    private int CountCycles(Machine machine, float carry, float window, out float newCarry)
+    {
+        float elapsed = carry + window;
+        int cycles = Mathf.FloorToInt(elapsed / machine.CycleDuration);
+        newCarry = elapsed - cycles * machine.CycleDuration;
+        return cycles;
+    }
+}
+
+public class OfflineRewardData
+{
+    public int TotalCoins;
+    public float OfflineTime;   // сколько всего не было игрока (сек)
+    public float BoostTime;     // сколько из этого действовал буст (сек)
+    public int BoostMultiplier; // множитель буста (1 — если буста не было)
+    public List<Machine> Machines = new List<Machine>();
+    public List<float> CycleRemainders = new List<float>();
 }
