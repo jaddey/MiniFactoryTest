@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -20,9 +20,9 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        // Скрываем панель именно здесь, а не в Start():
-        // Start может выполниться ПОСЛЕ того, как Factory.Start() уже показал
-        // награду через событие OnOfflineIncomeReady — и скрыл бы её обратно.
+        // РЎРєСЂС‹РІР°РµРј РїР°РЅРµР»СЊ РёРјРµРЅРЅРѕ Р·РґРµСЃСЊ, Р° РЅРµ РІ Start():
+        // Start РјРѕР¶РµС‚ РІС‹РїРѕР»РЅРёС‚СЊСЃСЏ РџРћРЎР›Р• С‚РѕРіРѕ, РєР°Рє Factory.Start() СѓР¶Рµ РїРѕРєР°Р·Р°Р»
+        // РЅР°РіСЂР°РґСѓ С‡РµСЂРµР· СЃРѕР±С‹С‚РёРµ OnOfflineIncomeReady вЂ” Рё СЃРєСЂС‹Р» Р±С‹ РµС‘ РѕР±СЂР°С‚РЅРѕ.
         _offlineRewardPanel.SetActive(false);
         _claimButton.onClick.AddListener(ClaimOfflineReward);
     }
@@ -40,8 +40,8 @@ public class UIManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // Подписка именно в OnEnable: он выполняется до ВСЕХ Start(),
-        // поэтому событие из Factory.Start() гарантированно будет поймано.
+        // РџРѕРґРїРёСЃРєР° РёРјРµРЅРЅРѕ РІ OnEnable: РѕРЅ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РґРѕ Р’РЎР•РҐ Start(),
+        // РїРѕСЌС‚РѕРјСѓ СЃРѕР±С‹С‚РёРµ РёР· Factory.Start() РіР°СЂР°РЅС‚РёСЂРѕРІР°РЅРЅРѕ Р±СѓРґРµС‚ РїРѕР№РјР°РЅРѕ.
         _offlineProgress.OnOfflineIncomeReady += ShowOfflineReward;
         _factory.OnCurrencyChanged += UpdateCoins;
         _boostManager.OnBoostStarted += UpdateBoostStatus;
@@ -66,18 +66,18 @@ public class UIManager : MonoBehaviour
         int seconds = Mathf.FloorToInt(reward.OfflineTime % 60f);
 
         string boostInfo = reward.BoostTime > 0f
-            ? $"\nИз них буст x{reward.BoostMultiplier}: {Mathf.FloorToInt(reward.BoostTime)} сек"
+            ? $"\nРР· РЅРёС… Р±СѓСЃС‚ x{reward.BoostMultiplier}: {Mathf.FloorToInt(reward.BoostTime)} СЃРµРє"
             : "";
 
         _offlineRewardText.text =
-            $"Вас не было: {minutes} мин {seconds} сек{boostInfo}\nЗаработано: {reward.TotalCoins:N0} монет";
+            $"Р’Р°СЃ РЅРµ Р±С‹Р»Рѕ: {minutes} РјРёРЅ {seconds} СЃРµРє{boostInfo}\nР—Р°СЂР°Р±РѕС‚Р°РЅРѕ: {reward.TotalCoins:N0} РјРѕРЅРµС‚";
         _offlineRewardPanel.SetActive(true);
     }
 
     private void ClaimOfflineReward()
     {
-        // Начисляется ровно та сумма, что была показана на панели
-        // (кеширована в OfflineProgress на момент расчёта).
+        // РќР°С‡РёСЃР»СЏРµС‚СЃСЏ СЂРѕРІРЅРѕ С‚Р° СЃСѓРјРјР°, С‡С‚Рѕ Р±С‹Р»Р° РїРѕРєР°Р·Р°РЅР° РЅР° РїР°РЅРµР»Рё
+        // (РєРµС€РёСЂРѕРІР°РЅР° РІ OfflineProgress РЅР° РјРѕРјРµРЅС‚ СЂР°СЃС‡С‘С‚Р°).
         _offlineProgress.ClaimOfflineIncome(_factory);
         _offlineRewardPanel.SetActive(false);
     }

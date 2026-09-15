@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +13,9 @@ public class OfflineProgress : MonoBehaviour
 
     private float MaxOfflineTime => GameConfigManager.Config?.offlineProduction?.maxOfflineTime ?? 7200f;
 
-    // Вызывается при запуске игры и при возврате из паузы.
-    // Считает награду ОДИН раз и кеширует — UI показывает ровно то,
-    // что будет выдано по кнопке.
+    // Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё Р·Р°РїСѓСЃРєРµ РёРіСЂС‹ Рё РїСЂРё РІРѕР·РІСЂР°С‚Рµ РёР· РїР°СѓР·С‹.
+    // РЎС‡РёС‚Р°РµС‚ РЅР°РіСЂР°РґСѓ РћР”РРќ СЂР°Р· Рё РєРµС€РёСЂСѓРµС‚ вЂ” UI РїРѕРєР°Р·С‹РІР°РµС‚ СЂРѕРІРЅРѕ С‚Рѕ,
+    // С‡С‚Рѕ Р±СѓРґРµС‚ РІС‹РґР°РЅРѕ РїРѕ РєРЅРѕРїРєРµ.
     public void CheckOfflineIncome(Factory factory)
     {
         _pendingReward = CalculateReward(factory);
@@ -24,15 +24,15 @@ public class OfflineProgress : MonoBehaviour
             OnOfflineIncomeReady?.Invoke(_pendingReward);
     }
 
-    // Начисляет ровно ту сумму, что была показана в UI.
+    // РќР°С‡РёСЃР»СЏРµС‚ СЂРѕРІРЅРѕ С‚Сѓ СЃСѓРјРјСѓ, С‡С‚Рѕ Р±С‹Р»Р° РїРѕРєР°Р·Р°РЅР° РІ UI.
     public void ClaimOfflineIncome(Factory factory)
     {
         if (_pendingReward == null || _pendingReward.TotalCoins <= 0) return;
 
         factory.AddCoins(_pendingReward.TotalCoins);
 
-        // Доводим прогресс циклов машин до состояния на момент возврата,
-        // чтобы те же циклы не посчитались второй раз в живом режиме.
+        // Р”РѕРІРѕРґРёРј РїСЂРѕРіСЂРµСЃСЃ С†РёРєР»РѕРІ РјР°С€РёРЅ РґРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ РЅР° РјРѕРјРµРЅС‚ РІРѕР·РІСЂР°С‚Р°,
+        // С‡С‚РѕР±С‹ С‚Рµ Р¶Рµ С†РёРєР»С‹ РЅРµ РїРѕСЃС‡РёС‚Р°Р»РёСЃСЊ РІС‚РѕСЂРѕР№ СЂР°Р· РІ Р¶РёРІРѕРј СЂРµР¶РёРјРµ.
         for (int i = 0; i < _pendingReward.Machines.Count; i++)
         {
             _pendingReward.Machines[i].SaveTimeSinceLastProduction(
@@ -41,7 +41,7 @@ public class OfflineProgress : MonoBehaviour
 
         _pendingReward = null;
 
-        // Фиксируем новое время выхода, чтобы награда не была выдана повторно.
+        // Р¤РёРєСЃРёСЂСѓРµРј РЅРѕРІРѕРµ РІСЂРµРјСЏ РІС‹С…РѕРґР°, С‡С‚РѕР±С‹ РЅР°РіСЂР°РґР° РЅРµ Р±С‹Р»Р° РІС‹РґР°РЅР° РїРѕРІС‚РѕСЂРЅРѕ.
         _saveSystem.SaveGame(factory);
     }
 
@@ -64,7 +64,7 @@ public class OfflineProgress : MonoBehaviour
         if (activeMachines.Count == 0) return result;
         result.Machines = activeMachines;
 
-        // --- 1. Сколько из offline-времени действовал буст ---
+        // --- 1. РЎРєРѕР»СЊРєРѕ РёР· offline-РІСЂРµРјРµРЅРё РґРµР№СЃС‚РІРѕРІР°Р» Р±СѓСЃС‚ ---
         float boostTime = 0f;
         int boostMultiplier = 1;
 
@@ -83,9 +83,9 @@ public class OfflineProgress : MonoBehaviour
         result.BoostMultiplier = boostMultiplier;
         float normalTime = offlineTime - boostTime;
 
-        // --- 2. Монеты по двум окнам ---
-        // Окно буста — с сохранённым множителем, остальное время — базово.
-        // Учитываем и незавершённый цикл на момент выхода (carry).
+        // --- 2. РњРѕРЅРµС‚С‹ РїРѕ РґРІСѓРј РѕРєРЅР°Рј ---
+        // РћРєРЅРѕ Р±СѓСЃС‚Р° вЂ” СЃ СЃРѕС…СЂР°РЅС‘РЅРЅС‹Рј РјРЅРѕР¶РёС‚РµР»РµРј, РѕСЃС‚Р°Р»СЊРЅРѕРµ РІСЂРµРјСЏ вЂ” Р±Р°Р·РѕРІРѕ.
+        // РЈС‡РёС‚С‹РІР°РµРј Рё РЅРµР·Р°РІРµСЂС€С‘РЅРЅС‹Р№ С†РёРєР» РЅР° РјРѕРјРµРЅС‚ РІС‹С…РѕРґР° (carry).
         int totalCoins = 0;
         foreach (var machine in activeMachines)
         {
@@ -116,9 +116,9 @@ public class OfflineProgress : MonoBehaviour
 public class OfflineRewardData
 {
     public int TotalCoins;
-    public float OfflineTime;   // сколько всего не было игрока (сек)
-    public float BoostTime;     // сколько из этого действовал буст (сек)
-    public int BoostMultiplier; // множитель буста (1 — если буста не было)
+    public float OfflineTime;   // СЃРєРѕР»СЊРєРѕ РІСЃРµРіРѕ РЅРµ Р±С‹Р»Рѕ РёРіСЂРѕРєР° (СЃРµРє)
+    public float BoostTime;     // СЃРєРѕР»СЊРєРѕ РёР· СЌС‚РѕРіРѕ РґРµР№СЃС‚РІРѕРІР°Р» Р±СѓСЃС‚ (СЃРµРє)
+    public int BoostMultiplier; // РјРЅРѕР¶РёС‚РµР»СЊ Р±СѓСЃС‚Р° (1 вЂ” РµСЃР»Рё Р±СѓСЃС‚Р° РЅРµ Р±С‹Р»Рѕ)
     public List<Machine> Machines = new List<Machine>();
     public List<float> CycleRemainders = new List<float>();
 }

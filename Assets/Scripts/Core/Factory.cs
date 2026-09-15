@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +13,13 @@ public class Factory : MonoBehaviour
     [SerializeField] private OfflineProgress _offlineProgress;
     [SerializeField] private SaveSystem _saveSystem;
 
-    // Публичные свойства для доступа к приватным полям (только в редакторе и тестах)
+    // РџСѓР±Р»РёС‡РЅС‹Рµ СЃРІРѕР№СЃС‚РІР° РґР»СЏ РґРѕСЃС‚СѓРїР° Рє РїСЂРёРІР°С‚РЅС‹Рј РїРѕР»СЏРј (С‚РѕР»СЊРєРѕ РІ СЂРµРґР°РєС‚РѕСЂРµ Рё С‚РµСЃС‚Р°С…)
 #if UNITY_EDITOR || UNITY_TEST
     public Machine[] MachinesForTesting => _machines;
     public BoostManager BoostManagerForTesting => _boostManager;
 #endif
 
-    // Обычные публичные свойства для основного кода
+    // РћР±С‹С‡РЅС‹Рµ РїСѓР±Р»РёС‡РЅС‹Рµ СЃРІРѕР№СЃС‚РІР° РґР»СЏ РѕСЃРЅРѕРІРЅРѕРіРѕ РєРѕРґР°
     public IEnumerable<Machine> Machines => _machines;
     public IBoostManager BoostManager => _boostManager;
 
@@ -148,7 +148,7 @@ public class Factory : MonoBehaviour
             .Sum(m => (float)m.CoinsPerCycle / m.CycleDuration);
     }
 
-    // Добавляем в конец класса Factory
+    // Р”РѕР±Р°РІР»СЏРµРј РІ РєРѕРЅРµС† РєР»Р°СЃСЃР° Factory
 #if UNITY_EDITOR
     public void SetupForTesting(Machine[] machines, BoostManager boostManager)
     {

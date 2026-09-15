@@ -1,60 +1,60 @@
-using NUnit.Framework;
+п»їusing NUnit.Framework;
 using UnityEngine;
 
 [TestFixture]
 public class MachineTests
 {
-    // Тест 1: Машина разблокируется
+    // РўРµСЃС‚ 1: РњР°С€РёРЅР° СЂР°Р·Р±Р»РѕРєРёСЂСѓРµС‚СЃСЏ
     [Test]
     public void Machine_Unlock_ChangesStateToUnlocked()
     {
-        // Arrange (подготовка)
+        // Arrange (РїРѕРґРіРѕС‚РѕРІРєР°)
         var machine = new GameObject().AddComponent<Machine>();
-        Assert.AreEqual(MachineState.Locked, machine.State); // Проверяем, что изначально заблокирована
+        Assert.AreEqual(MachineState.Locked, machine.State); // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РёР·РЅР°С‡Р°Р»СЊРЅРѕ Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅР°
 
-        // Act (действие)
+        // Act (РґРµР№СЃС‚РІРёРµ)
         bool result = machine.Unlock();
 
-        // Assert (проверка)
-        Assert.IsTrue(result); // Разблокировка должна вернуться успешно
-        Assert.AreEqual(MachineState.Unlocked, machine.State); // Состояние должно измениться на Unlocked
+        // Assert (РїСЂРѕРІРµСЂРєР°)
+        Assert.IsTrue(result); // Р Р°Р·Р±Р»РѕРєРёСЂРѕРІРєР° РґРѕР»Р¶РЅР° РІРµСЂРЅСѓС‚СЊСЃСЏ СѓСЃРїРµС€РЅРѕ
+        Assert.AreEqual(MachineState.Unlocked, machine.State); // РЎРѕСЃС‚РѕСЏРЅРёРµ РґРѕР»Р¶РЅРѕ РёР·РјРµРЅРёС‚СЊСЃСЏ РЅР° Unlocked
     }
 
-    // Тест 2: Машина улучшается
+    // РўРµСЃС‚ 2: РњР°С€РёРЅР° СѓР»СѓС‡С€Р°РµС‚СЃСЏ
     [Test]
     public void Machine_Upgrade_IncreasesLevel()
     {
         // Arrange
         var machine = new GameObject().AddComponent<Machine>();
-        machine.Unlock(); // Разблокируем машину
-        Assert.AreEqual(1, machine.Level); // Проверяем начальный уровень
+        machine.Unlock(); // Р Р°Р·Р±Р»РѕРєРёСЂСѓРµРј РјР°С€РёРЅСѓ
+        Assert.AreEqual(1, machine.Level); // РџСЂРѕРІРµСЂСЏРµРј РЅР°С‡Р°Р»СЊРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ
 
         // Act
         bool result = machine.Upgrade();
 
         // Assert
-        Assert.IsTrue(result); // Улучшение должно вернуться успешно
-        Assert.AreEqual(2, machine.Level); // Уровень должен увеличиться до 2
+        Assert.IsTrue(result); // РЈР»СѓС‡С€РµРЅРёРµ РґРѕР»Р¶РЅРѕ РІРµСЂРЅСѓС‚СЊСЃСЏ СѓСЃРїРµС€РЅРѕ
+        Assert.AreEqual(2, machine.Level); // РЈСЂРѕРІРµРЅСЊ РґРѕР»Р¶РµРЅ СѓРІРµР»РёС‡РёС‚СЊСЃСЏ РґРѕ 2
     }
 
-    // Тест 3: Машина не может улучшиться выше MaxLevel
+    // РўРµСЃС‚ 3: РњР°С€РёРЅР° РЅРµ РјРѕР¶РµС‚ СѓР»СѓС‡С€РёС‚СЊСЃСЏ РІС‹С€Рµ MaxLevel
     [Test]
     public void Machine_Upgrade_FailsIfMaxLevelReached()
     {
         // Arrange
         var machine = new GameObject().AddComponent<Machine>();
         machine.Unlock();
-        for (int i = 1; i < machine.MaxLevel; i++) // Доводим до максимального уровня
+        for (int i = 1; i < machine.MaxLevel; i++) // Р”РѕРІРѕРґРёРј РґРѕ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ СѓСЂРѕРІРЅСЏ
         {
             machine.Upgrade();
         }
-        Assert.AreEqual(machine.MaxLevel, machine.Level); // Проверяем, что уровень максимальный
+        Assert.AreEqual(machine.MaxLevel, machine.Level); // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ СѓСЂРѕРІРµРЅСЊ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№
 
         // Act
         bool result = machine.Upgrade();
 
         // Assert
-        Assert.IsFalse(result); // Улучшение должно провалиться
-        Assert.AreEqual(machine.MaxLevel, machine.Level); // Уровень не должен измениться
+        Assert.IsFalse(result); // РЈР»СѓС‡С€РµРЅРёРµ РґРѕР»Р¶РЅРѕ РїСЂРѕРІР°Р»РёС‚СЊСЃСЏ
+        Assert.AreEqual(machine.MaxLevel, machine.Level); // РЈСЂРѕРІРµРЅСЊ РЅРµ РґРѕР»Р¶РµРЅ РёР·РјРµРЅРёС‚СЊСЃСЏ
     }
 }

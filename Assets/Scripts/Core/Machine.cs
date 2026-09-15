@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using System;
 
 public enum MachineState
@@ -9,7 +9,7 @@ public enum MachineState
 
 public class Machine : MonoBehaviour
 {
-    [SerializeField] private int _id; // ID машины (для поиска в конфиге)
+    [SerializeField] private int _id; // ID РјР°С€РёРЅС‹ (РґР»СЏ РїРѕРёСЃРєР° РІ РєРѕРЅС„РёРіРµ)
 
     private MachineState _state = MachineState.Locked;
     private int _level = 1;
@@ -33,7 +33,7 @@ public class Machine : MonoBehaviour
     public float CycleDuration => GetConfig()?.baseCycleDuration / (1 + (_level - 1) * 0.1f) ?? 3f;
     public bool IsProducing => _isProducing;
     public int MaxLevel => GetConfig()?.maxLevel ?? 10;
-    public string Name => GetConfig()?.name ?? $"Машина {_id}";
+    public string Name => GetConfig()?.name ?? $"РњР°С€РёРЅР° {_id}";
 
     private MachineConfig GetConfig()
     {

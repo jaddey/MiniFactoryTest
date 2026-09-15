@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using System.IO;
 using System;
 
@@ -17,7 +17,7 @@ public class GameConfigManager : MonoBehaviour
         string filePath = Path.Combine(Application.streamingAssetsPath, "game_config.json");
         if (!File.Exists(filePath))
         {
-            Debug.LogError("Конфигурационный файл не найден: " + filePath);
+            Debug.LogError("РљРѕРЅС„РёРіСѓСЂР°С†РёРѕРЅРЅС‹Р№ С„Р°Р№Р» РЅРµ РЅР°Р№РґРµРЅ: " + filePath);
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -30,11 +30,11 @@ public class GameConfigManager : MonoBehaviour
         try
         {
             _config = JsonUtility.FromJson<GameConfig>(json);
-            Debug.Log("Конфигурация загружена успешно!");
+            Debug.Log("РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ Р·Р°РіСЂСѓР¶РµРЅР° СѓСЃРїРµС€РЅРѕ!");
         }
         catch (Exception e)
         {
-            Debug.LogError("Ошибка парсинга конфигурации: " + e.Message);
+            Debug.LogError("РћС€РёР±РєР° РїР°СЂСЃРёРЅРіР° РєРѕРЅС„РёРіСѓСЂР°С†РёРё: " + e.Message);
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -44,7 +44,7 @@ public class GameConfigManager : MonoBehaviour
 
         if (_config == null)
         {
-            Debug.LogError("Конфигурация не загружена!");
+            Debug.LogError("РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ РЅРµ Р·Р°РіСЂСѓР¶РµРЅР°!");
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else

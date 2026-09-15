@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.UI;
 
 public class ResetGame : MonoBehaviour
@@ -18,10 +18,10 @@ public class ResetGame : MonoBehaviour
 
     public void ResetAll()
     {
-        // Сбрасываем валюту
+        // РЎР±СЂР°СЃС‹РІР°РµРј РІР°Р»СЋС‚Сѓ
         _factory.AddCoins(-_factory.Currency);
 
-        // Сбрасываем все машины
+        // РЎР±СЂР°СЃС‹РІР°РµРј РІСЃРµ РјР°С€РёРЅС‹
         foreach (var machine in _factory.Machines)
         {
             machine.SaveTimeSinceLastProduction(0f);
@@ -29,12 +29,12 @@ public class ResetGame : MonoBehaviour
             machine.Lock();
         }
 
-        // Сбрасываем Boost
+        // РЎР±СЂР°СЃС‹РІР°РµРј Boost
         _boostManager.StopBoost();
 
-        // Сохраняем состояние
+        // РЎРѕС…СЂР°РЅСЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ
         _saveSystem.SaveGame(_factory);
 
-        Debug.Log("Игра сброшена на начальные настройки!");
+        Debug.Log("РРіСЂР° СЃР±СЂРѕС€РµРЅР° РЅР° РЅР°С‡Р°Р»СЊРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё!");
     }
 }

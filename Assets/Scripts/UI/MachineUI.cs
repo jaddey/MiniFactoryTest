@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -40,14 +40,14 @@ public class MachineUI : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Недостаточно монет для разблокировки!");
+                Debug.LogWarning("РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РјРѕРЅРµС‚ РґР»СЏ СЂР°Р·Р±Р»РѕРєРёСЂРѕРІРєРё!");
             }
         }
         else if (_machine.State == MachineState.Unlocked)
         {
             if (_machine.Level >= _machine.MaxLevel)
             {
-                Debug.LogWarning($"Максимальный уровень ({_machine.MaxLevel}) уже достигнут!");
+                Debug.LogWarning($"РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ ({_machine.MaxLevel}) СѓР¶Рµ РґРѕСЃС‚РёРіРЅСѓС‚!");
                 return;
             }
 
@@ -57,7 +57,7 @@ public class MachineUI : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Недостаточно монет для улучшения!");
+                Debug.LogWarning("РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РјРѕРЅРµС‚ РґР»СЏ СѓР»СѓС‡С€РµРЅРёСЏ!");
             }
         }
     }
@@ -68,8 +68,8 @@ public class MachineUI : MonoBehaviour
 
         if (_machine.State == MachineState.Locked)
         {
-            _actionButtonText.text = $"Разблокировать - {_machine.UnlockCost} монет";
-            _levelText.text = $"{_machine.Name} | Заблокировано";
+            _actionButtonText.text = $"Р Р°Р·Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ - {_machine.UnlockCost} РјРѕРЅРµС‚";
+            _levelText.text = $"{_machine.Name} | Р—Р°Р±Р»РѕРєРёСЂРѕРІР°РЅРѕ";
             if (_statusText != null)
                 _statusText.text = "";
         }
@@ -77,17 +77,17 @@ public class MachineUI : MonoBehaviour
         {
             if (_machine.Level >= _machine.MaxLevel)
             {
-                _actionButtonText.text = "Макс. уровень";
+                _actionButtonText.text = "РњР°РєСЃ. СѓСЂРѕРІРµРЅСЊ";
                 _actionButton.interactable = false;
             }
             else
             {
-                _actionButtonText.text = $"Улучшить - {_machine.UpgradeCost} монет";
+                _actionButtonText.text = $"РЈР»СѓС‡С€РёС‚СЊ - {_machine.UpgradeCost} РјРѕРЅРµС‚";
                 _actionButton.interactable = true;
             }
-            _levelText.text = $"{_machine.Name} | Уровень: {_machine.Level}/{_machine.MaxLevel}";
+            _levelText.text = $"{_machine.Name} | РЈСЂРѕРІРµРЅСЊ: {_machine.Level}/{_machine.MaxLevel}";
             if (_statusText != null)
-                _statusText.text = $"Производит: {_machine.CoinsPerCycle} монет за {_machine.CycleDuration:F1} сек";
+                _statusText.text = $"РџСЂРѕРёР·РІРѕРґРёС‚: {_machine.CoinsPerCycle} РјРѕРЅРµС‚ Р·Р° {_machine.CycleDuration:F1} СЃРµРє";
         }
     }
 }
